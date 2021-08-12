@@ -7,19 +7,35 @@ class CountdownTimer {
             hoursEl: document.querySelector('[data-value="hours"]'),
             minsEl: document.querySelector('[data-value="mins"]'),
             secsEl: document.querySelector('[data-value="secs"]'),
+            messageEl: document.querySelector('.message'),
         };
+        this.timerId = null;
+        this.start();
     }
 
     start() {
-        setInterval(() => {
+        this.timerId = setInterval(() => {
             const currentTime = Date.now();
             const deltaTime = this.targetDate - currentTime;
             const { days, hours, mins, secs } =
                 this.getTimeComponents(deltaTime);
-            this.refs.daysEl.textContent = days;
-            this.refs.hoursEl.textContent = hours;
-            this.refs.minsEl.textContent = mins;
-            this.refs.secsEl.textContent = secs;
+
+            if (deltaTime < 0) {
+                // clearInterval(this.timerId);
+                this.refs.messageEl.textContent = `Упс, Вы опоздали. С заданной даты уже прошло ${
+                    days * -1
+                }д ${hours * -1}ч ${mins * -1}м ${secs * -1} с`;
+                this.refs.daysEl.textContent = '❌';
+                this.refs.hoursEl.textContent = '❌';
+                this.refs.minsEl.textContent = '❌';
+                this.refs.secsEl.textContent = '❌';
+                return;
+            } else {
+                this.refs.daysEl.textContent = days;
+                this.refs.hoursEl.textContent = hours;
+                this.refs.minsEl.textContent = mins;
+                this.refs.secsEl.textContent = secs;
+            }
         }, 1000);
     }
 
@@ -45,5 +61,3 @@ const timerToday = new CountdownTimer({
     selector: '#timer-1',
     targetDate: new Date('September 3, 2021 00:00:00'),
 });
-
-timerToday.start();
